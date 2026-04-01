@@ -137,6 +137,7 @@ export default function ManageCategories() {
     const payload: any = {
       doctor_id: selectedDoctor,
       category_id: selectedCategory.id,
+      unit_id: selectedUnit || null,
     };
     if (ruleRetention.trim()) payload.retention_percentage = parseFloat(ruleRetention);
     if (ruleRepasse.trim()) payload.repasse_percentage = parseFloat(ruleRepasse);
@@ -151,6 +152,7 @@ export default function ManageCategories() {
     } else {
       toast({ title: 'Regra salva!' });
       setSelectedDoctor('');
+      setSelectedUnit('');
       setRuleRetention('');
       setRuleRepasse('');
       setRuleFixedFee('');
