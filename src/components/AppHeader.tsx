@@ -4,7 +4,7 @@ import { LogOut, Stethoscope, Shield } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 export default function AppHeader() {
-  const { user, logout, isAdmin } = useAuth();
+  const { user, logout, isAdmin, displayName } = useAuth();
 
   if (!user) return null;
 
@@ -20,7 +20,7 @@ export default function AppHeader() {
         <div className="flex items-center gap-3">
           <Badge variant={isAdmin ? 'default' : 'secondary'} className="gap-1">
             {isAdmin ? <Shield className="w-3 h-3" /> : <Stethoscope className="w-3 h-3" />}
-            {user.name}
+            {displayName}
           </Badge>
           <Button variant="ghost" size="sm" onClick={logout} className="text-muted-foreground">
             <LogOut className="w-4 h-4 mr-1" />
