@@ -62,6 +62,7 @@ export default function ManageCategories() {
   const [rulesLoading, setRulesLoading] = useState(false);
   const [rulesSaving, setRulesSaving] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState('');
+  const [selectedUnit, setSelectedUnit] = useState('');
   const [ruleRetention, setRuleRetention] = useState('');
   const [ruleRepasse, setRuleRepasse] = useState('');
   const [ruleFixedFee, setRuleFixedFee] = useState('');
