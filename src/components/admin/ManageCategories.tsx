@@ -286,13 +286,25 @@ export default function ManageCategories() {
 
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3 items-end">
-              <div className="space-y-2 col-span-2">
+              <div className="space-y-2">
                 <Label>Médico</Label>
                 <Select value={selectedDoctor} onValueChange={setSelectedDoctor}>
                   <SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger>
                   <SelectContent>
                     {doctors.map(d => (
                       <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Unidade</Label>
+                <Select value={selectedUnit} onValueChange={setSelectedUnit}>
+                  <SelectTrigger><SelectValue placeholder="Todas (padrão)" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas</SelectItem>
+                    {units.map(u => (
+                      <SelectItem key={u.id} value={u.id}>{u.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
