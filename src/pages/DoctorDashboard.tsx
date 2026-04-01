@@ -5,7 +5,7 @@ import BillingTable from '@/components/BillingTable';
 import AppHeader from '@/components/AppHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-export default function DoctorDashboard() {
+export default function DoctorDashboard({ onOpenProfile }: { onOpenProfile?: () => void }) {
   const { user } = useAuth();
   const { getDoctorData } = useBilling();
 
@@ -16,7 +16,7 @@ export default function DoctorDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      <AppHeader />
+      <AppHeader onOpenProfile={onOpenProfile} />
       <main className="container max-w-[1600px] mx-auto px-4 py-6 space-y-6">
         <div>
           <h1 className="text-2xl font-bold font-display">Meu Painel Financeiro</h1>

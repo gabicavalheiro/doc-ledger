@@ -8,7 +8,7 @@ import AppHeader from '@/components/AppHeader';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-export default function AdminDashboard() {
+export default function AdminDashboard({ onOpenProfile }: { onOpenProfile?: () => void }) {
   const { user } = useAuth();
   const { data, updateMonth, getDoctorData } = useBilling();
   const [selectedDoctorId, setSelectedDoctorId] = useState(DOCTORS[0].id);
@@ -17,7 +17,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      <AppHeader />
+      <AppHeader onOpenProfile={onOpenProfile} />
       <main className="container max-w-[1600px] mx-auto px-4 py-6 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
