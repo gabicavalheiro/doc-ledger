@@ -68,12 +68,14 @@ export default function ManageCategories() {
   const [ruleFixedFee, setRuleFixedFee] = useState('');
 
   const fetchData = async () => {
-    const [catRes, docRes] = await Promise.all([
+    const [catRes, docRes, unitRes] = await Promise.all([
       supabase.from('payment_categories').select('*').order('name'),
       supabase.from('doctors').select('id, name').eq('active', true).order('name'),
+      supabase.from('units').select('id, name').eq('active', true).order('name'),
     ]);
     if (catRes.data) setCategories(catRes.data);
     if (docRes.data) setDoctors(docRes.data);
+    if (unitRes.data) setUnits(unitRes.data);
     setLoading(false);
   };
 
