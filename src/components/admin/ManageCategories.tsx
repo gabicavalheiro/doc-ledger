@@ -344,6 +344,7 @@ export default function ManageCategories() {
                   <div key={r.id} className="flex items-center justify-between p-2 rounded-lg bg-muted/50 text-sm">
                     <div>
                       <span className="font-medium">{getDoctorName(r.doctor_id)}</span>
+                      <span className="text-muted-foreground ml-2 text-xs">📍 {getUnitName(r.unit_id)}</span>
                       <span className="text-muted-foreground ml-2">
                         {selectedCategory?.calculation_type === 'percentage'
                           ? `Ret: ${r.retention_percentage ?? '-'}% · Rep: ${r.repasse_percentage ?? '-'}%`
