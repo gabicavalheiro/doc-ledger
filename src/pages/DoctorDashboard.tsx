@@ -11,6 +11,7 @@ export default function DoctorDashboard() {
 
   if (!user) return null;
 
+  const { displayName } = useAuth();
   const doctorData = getDoctorData(user.id);
 
   return (
