@@ -23,6 +23,7 @@ export type Database = {
           id: string
           repasse_percentage: number | null
           retention_percentage: number | null
+          unit_id: string | null
           updated_at: string
         }
         Insert: {
@@ -33,6 +34,7 @@ export type Database = {
           id?: string
           repasse_percentage?: number | null
           retention_percentage?: number | null
+          unit_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -43,6 +45,7 @@ export type Database = {
           id?: string
           repasse_percentage?: number | null
           retention_percentage?: number | null
+          unit_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -58,6 +61,13 @@ export type Database = {
             columns: ["doctor_id"]
             isOneToOne: false
             referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "doctor_category_rules_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "units"
             referencedColumns: ["id"]
           },
         ]
@@ -158,6 +168,30 @@ export type Database = {
           specialty?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      units: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
         }
         Relationships: []
       }
