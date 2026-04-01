@@ -8,10 +8,11 @@ import AppHeader from '@/components/AppHeader';
 import ManageUsers from '@/components/admin/ManageUsers';
 import ManageDoctors from '@/components/admin/ManageDoctors';
 import ManageCategories from '@/components/admin/ManageCategories';
+import ManageUnits from '@/components/admin/ManageUnits';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BarChart3, UserPlus, Stethoscope, Tags } from 'lucide-react';
+import { BarChart3, UserPlus, Stethoscope, Tags, Building2 } from 'lucide-react';
 
 export default function AdminDashboard({ onOpenProfile }: { onOpenProfile?: () => void }) {
   const { user } = useAuth();
