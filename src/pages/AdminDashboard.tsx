@@ -8,7 +8,7 @@ import AppHeader from '@/components/AppHeader';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-export default function AdminDashboard() {
+export default function AdminDashboard({ onOpenProfile }: { onOpenProfile?: () => void }) {
   const { user } = useAuth();
   const { data, updateMonth, getDoctorData } = useBilling();
   const [selectedDoctorId, setSelectedDoctorId] = useState(DOCTORS[0].id);
