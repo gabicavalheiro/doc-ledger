@@ -44,6 +44,10 @@ export default function AdminDashboard({ onOpenProfile }: { onOpenProfile?: () =
               <Tags className="w-4 h-4" />
               Categorias
             </TabsTrigger>
+            <TabsTrigger value="units" className="gap-1.5 data-[state=active]:bg-card data-[state=active]:shadow-sm">
+              <Building2 className="w-4 h-4" />
+              Unidades
+            </TabsTrigger>
             <TabsTrigger value="users" className="gap-1.5 data-[state=active]:bg-card data-[state=active]:shadow-sm">
               <UserPlus className="w-4 h-4" />
               Usuários
