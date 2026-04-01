@@ -5,7 +5,7 @@ import BillingTable from '@/components/BillingTable';
 import AppHeader from '@/components/AppHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-export default function DoctorDashboard() {
+export default function DoctorDashboard({ onOpenProfile }: { onOpenProfile?: () => void }) {
   const { user } = useAuth();
   const { getDoctorData } = useBilling();
 
