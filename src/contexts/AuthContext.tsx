@@ -19,22 +19,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  const checkAdminRole = useCallback(async (userId: string) => {
+    const { data } = await supabase.rpc('has_role', {
+      _user_id: userId,
+      _role: 'admin',
+    });
+    setIsAdmin(!!data);
+  }, []);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+      if (session?.user) {
+        setTimeout(() => checkAdminRole(session.user.id), 0);
+      } else {
+        setIsAdmin(false);
+      }
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+      if (session?.user) {
+        checkAdminRole(session.user.id);
+      }
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [checkAdminRole]);
 
   const login = useCallback(async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -58,7 +75,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || '';
-  const isAdmin = user?.user_metadata?.role === 'admin';
 
   return (
     <AuthContext.Provider value={{ user, session, loading, login, signup, logout, isAdmin, displayName }}>

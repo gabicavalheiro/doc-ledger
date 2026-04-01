@@ -17,7 +17,7 @@ export default function AdminDashboard({ onOpenProfile }: { onOpenProfile?: () =
 
   return (
     <div className="min-h-screen bg-background">
-      <AppHeader />
+      <AppHeader onOpenProfile={onOpenProfile} />
       <main className="container max-w-[1600px] mx-auto px-4 py-6 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>

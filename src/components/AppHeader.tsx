@@ -1,9 +1,13 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { LogOut, Stethoscope, Shield } from 'lucide-react';
+import { LogOut, Stethoscope, Shield, Settings } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
-export default function AppHeader() {
+interface AppHeaderProps {
+  onOpenProfile?: () => void;
+}
+
+export default function AppHeader({ onOpenProfile }: AppHeaderProps) {
   const { user, logout, isAdmin, displayName } = useAuth();
 
   if (!user) return null;
@@ -22,6 +26,12 @@ export default function AppHeader() {
             {isAdmin ? <Shield className="w-3 h-3" /> : <Stethoscope className="w-3 h-3" />}
             {displayName}
           </Badge>
+          {onOpenProfile && (
+            <Button variant="ghost" size="sm" onClick={onOpenProfile} className="text-muted-foreground">
+              <Settings className="w-4 h-4 mr-1" />
+              Perfil
+            </Button>
+          )}
           <Button variant="ghost" size="sm" onClick={logout} className="text-muted-foreground">
             <LogOut className="w-4 h-4 mr-1" />
             Sair
