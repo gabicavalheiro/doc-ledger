@@ -95,6 +95,10 @@ export default function AdminDashboard({ onOpenProfile }: { onOpenProfile?: () =
             <ManageCategories />
           </TabsContent>
 
+          <TabsContent value="units">
+            <ManageUnits />
+          </TabsContent>
+
           <TabsContent value="users">
             <ManageUsers />
           </TabsContent>
