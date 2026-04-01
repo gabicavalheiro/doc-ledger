@@ -20,7 +20,7 @@ export default function DoctorDashboard() {
       <main className="container max-w-[1600px] mx-auto px-4 py-6 space-y-6">
         <div>
           <h1 className="text-2xl font-bold font-display">Meu Painel Financeiro</h1>
-          <p className="text-muted-foreground text-sm">Bem-vindo(a), {user.name}</p>
+          <p className="text-muted-foreground text-sm">Bem-vindo(a), {displayName}</p>
         </div>
 
         <SummaryCards data={doctorData} />
