@@ -14,6 +14,123 @@ export type Database = {
   }
   public: {
     Tables: {
+      doctor_category_rules: {
+        Row: {
+          category_id: string
+          created_at: string
+          doctor_id: string
+          fixed_fee: number | null
+          id: string
+          repasse_percentage: number | null
+          retention_percentage: number | null
+          updated_at: string
+        }
+        Insert: {
+          category_id: string
+          created_at?: string
+          doctor_id: string
+          fixed_fee?: number | null
+          id?: string
+          repasse_percentage?: number | null
+          retention_percentage?: number | null
+          updated_at?: string
+        }
+        Update: {
+          category_id?: string
+          created_at?: string
+          doctor_id?: string
+          fixed_fee?: number | null
+          id?: string
+          repasse_percentage?: number | null
+          retention_percentage?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_category_rules_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "payment_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "doctor_category_rules_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      doctors: {
+        Row: {
+          active: boolean
+          created_at: string
+          crm: string | null
+          id: string
+          name: string
+          specialty: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          crm?: string | null
+          id?: string
+          name: string
+          specialty?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          crm?: string | null
+          id?: string
+          name?: string
+          specialty?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      payment_categories: {
+        Row: {
+          active: boolean
+          calculation_type: string
+          created_at: string
+          fixed_fee: number
+          id: string
+          name: string
+          repasse_percentage: number
+          retention_percentage: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          calculation_type?: string
+          created_at?: string
+          fixed_fee?: number
+          id?: string
+          name: string
+          repasse_percentage?: number
+          retention_percentage?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          calculation_type?: string
+          created_at?: string
+          fixed_fee?: number
+          id?: string
+          name?: string
+          repasse_percentage?: number
+          retention_percentage?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
