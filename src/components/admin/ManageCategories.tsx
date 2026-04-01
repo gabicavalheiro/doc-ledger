@@ -25,10 +25,16 @@ interface Doctor {
   name: string;
 }
 
+interface Unit {
+  id: string;
+  name: string;
+}
+
 interface DoctorRule {
   id: string;
   doctor_id: string;
   category_id: string;
+  unit_id: string | null;
   retention_percentage: number | null;
   repasse_percentage: number | null;
   fixed_fee: number | null;
@@ -38,6 +44,7 @@ export default function ManageCategories() {
   const { toast } = useToast();
   const [categories, setCategories] = useState<Category[]>([]);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [units, setUnits] = useState<Unit[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -55,17 +62,20 @@ export default function ManageCategories() {
   const [rulesLoading, setRulesLoading] = useState(false);
   const [rulesSaving, setRulesSaving] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState('');
+  const [selectedUnit, setSelectedUnit] = useState('');
   const [ruleRetention, setRuleRetention] = useState('');
   const [ruleRepasse, setRuleRepasse] = useState('');
   const [ruleFixedFee, setRuleFixedFee] = useState('');
 
   const fetchData = async () => {
-    const [catRes, docRes] = await Promise.all([
+    const [catRes, docRes, unitRes] = await Promise.all([
       supabase.from('payment_categories').select('*').order('name'),
       supabase.from('doctors').select('id, name').eq('active', true).order('name'),
+      supabase.from('units').select('id, name').eq('active', true).order('name'),
     ]);
     if (catRes.data) setCategories(catRes.data);
     if (docRes.data) setDoctors(docRes.data);
+    if (unitRes.data) setUnits(unitRes.data);
     setLoading(false);
   };
 
@@ -127,6 +137,7 @@ export default function ManageCategories() {
     const payload: any = {
       doctor_id: selectedDoctor,
       category_id: selectedCategory.id,
+      unit_id: selectedUnit && selectedUnit !== 'all' ? selectedUnit : null,
     };
     if (ruleRetention.trim()) payload.retention_percentage = parseFloat(ruleRetention);
     if (ruleRepasse.trim()) payload.repasse_percentage = parseFloat(ruleRepasse);
@@ -141,6 +152,7 @@ export default function ManageCategories() {
     } else {
       toast({ title: 'Regra salva!' });
       setSelectedDoctor('');
+      setSelectedUnit('');
       setRuleRetention('');
       setRuleRepasse('');
       setRuleFixedFee('');
@@ -165,6 +177,7 @@ export default function ManageCategories() {
   };
 
   const getDoctorName = (doctorId: string) => doctors.find(d => d.id === doctorId)?.name || doctorId;
+  const getUnitName = (unitId: string | null) => unitId ? units.find(u => u.id === unitId)?.name || '' : 'Todas';
 
   return (
     <>
@@ -273,13 +286,25 @@ export default function ManageCategories() {
 
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3 items-end">
-              <div className="space-y-2 col-span-2">
+              <div className="space-y-2">
                 <Label>Médico</Label>
                 <Select value={selectedDoctor} onValueChange={setSelectedDoctor}>
                   <SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger>
                   <SelectContent>
                     {doctors.map(d => (
                       <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Unidade</Label>
+                <Select value={selectedUnit} onValueChange={setSelectedUnit}>
+                  <SelectTrigger><SelectValue placeholder="Todas (padrão)" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas</SelectItem>
+                    {units.map(u => (
+                      <SelectItem key={u.id} value={u.id}>{u.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -319,6 +344,7 @@ export default function ManageCategories() {
                   <div key={r.id} className="flex items-center justify-between p-2 rounded-lg bg-muted/50 text-sm">
                     <div>
                       <span className="font-medium">{getDoctorName(r.doctor_id)}</span>
+                      <span className="text-muted-foreground ml-2 text-xs">📍 {getUnitName(r.unit_id)}</span>
                       <span className="text-muted-foreground ml-2">
                         {selectedCategory?.calculation_type === 'percentage'
                           ? `Ret: ${r.retention_percentage ?? '-'}% · Rep: ${r.repasse_percentage ?? '-'}%`
