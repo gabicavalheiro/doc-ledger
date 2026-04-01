@@ -25,10 +25,16 @@ interface Doctor {
   name: string;
 }
 
+interface Unit {
+  id: string;
+  name: string;
+}
+
 interface DoctorRule {
   id: string;
   doctor_id: string;
   category_id: string;
+  unit_id: string | null;
   retention_percentage: number | null;
   repasse_percentage: number | null;
   fixed_fee: number | null;
