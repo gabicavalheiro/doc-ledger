@@ -44,6 +44,7 @@ export default function ManageCategories() {
   const { toast } = useToast();
   const [categories, setCategories] = useState<Category[]>([]);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [units, setUnits] = useState<Unit[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
