@@ -177,6 +177,7 @@ export default function ManageCategories() {
   };
 
   const getDoctorName = (doctorId: string) => doctors.find(d => d.id === doctorId)?.name || doctorId;
+  const getUnitName = (unitId: string | null) => unitId ? units.find(u => u.id === unitId)?.name || '' : 'Todas';
 
   return (
     <>
