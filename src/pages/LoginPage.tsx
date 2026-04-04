@@ -30,7 +30,7 @@ export default function LoginPage() {
       if (error) {
         toast({ title: 'Erro ao cadastrar', description: error, variant: 'destructive' });
       } else {
-        toast({ title: 'Conta criada!', description: 'Verifique seu email para confirmar o cadastro.' });
+        toast({ title: 'Conta criada!', description: 'Você já pode acessar o sistema.' });
       }
     } else {
       const { error } = await login(email, password);
