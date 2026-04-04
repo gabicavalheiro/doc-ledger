@@ -17,25 +17,22 @@ export default function DoctorDashboard({ onOpenProfile }: { onOpenProfile?: () 
   return (
     <div className="min-h-screen bg-background">
       <AppHeader onOpenProfile={onOpenProfile} />
-      <main className="container max-w-[1600px] mx-auto px-4 py-6 space-y-6">
+      <main className="container max-w-[1600px] mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
         <div>
-          <h1 className="text-2xl font-bold font-display">Meu Painel Financeiro</h1>
-          <p className="text-muted-foreground text-sm">Bem-vindo(a), {displayName}</p>
+          <h1 className="text-xl sm:text-2xl font-bold font-display">Meu Painel Financeiro</h1>
+          <p className="text-muted-foreground text-xs sm:text-sm">Bem-vindo(a), {displayName}</p>
         </div>
 
         <SummaryCards data={doctorData} />
 
         <Card className="border-0 shadow-card">
-          <CardHeader className="pb-3">
-            <CardTitle className="font-display text-lg">
+          <CardHeader className="pb-3 px-3 sm:px-6">
+            <CardTitle className="font-display text-base sm:text-lg">
               Relatório Mensal — {doctorData.year}
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-0 sm:p-4">
-            <BillingTable
-              data={doctorData}
-              editable={false}
-            />
+          <CardContent className="p-0">
+            <BillingTable data={doctorData} editable={false} />
           </CardContent>
         </Card>
       </main>

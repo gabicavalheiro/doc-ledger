@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useBilling } from '@/contexts/BillingContext';
 import { DOCTORS } from '@/types/billing';
@@ -24,41 +24,43 @@ export default function AdminDashboard({ onOpenProfile }: { onOpenProfile?: () =
   return (
     <div className="min-h-screen bg-background">
       <AppHeader onOpenProfile={onOpenProfile} />
-      <main className="container max-w-[1600px] mx-auto px-4 py-6 space-y-6">
+      <main className="container max-w-[1600px] mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
         <div>
-          <h1 className="text-2xl font-bold font-display">Painel Administrativo</h1>
-          <p className="text-muted-foreground text-sm">Gerencie faturamento, médicos, categorias e usuários</p>
+          <h1 className="text-xl sm:text-2xl font-bold font-display">Painel Administrativo</h1>
+          <p className="text-muted-foreground text-xs sm:text-sm">Gerencie faturamento, médicos, categorias e usuários</p>
         </div>
 
-        <Tabs defaultValue="billing" className="space-y-6">
-          <TabsList className="bg-muted/50 p-1 h-auto flex-wrap">
-            <TabsTrigger value="billing" className="gap-1.5 data-[state=active]:bg-card data-[state=active]:shadow-sm">
-              <BarChart3 className="w-4 h-4" />
-              Faturamento
+        <Tabs defaultValue="billing" className="space-y-4 sm:space-y-6">
+          <TabsList className="bg-muted/50 p-1 h-auto flex flex-wrap gap-1">
+            <TabsTrigger value="billing" className="gap-1 sm:gap-1.5 text-xs sm:text-sm data-[state=active]:bg-card data-[state=active]:shadow-sm">
+              <BarChart3 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="hidden xs:inline">Faturamento</span>
+              <span className="xs:hidden">Fatur.</span>
             </TabsTrigger>
-            <TabsTrigger value="doctors" className="gap-1.5 data-[state=active]:bg-card data-[state=active]:shadow-sm">
-              <Stethoscope className="w-4 h-4" />
+            <TabsTrigger value="doctors" className="gap-1 sm:gap-1.5 text-xs sm:text-sm data-[state=active]:bg-card data-[state=active]:shadow-sm">
+              <Stethoscope className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               Médicos
             </TabsTrigger>
-            <TabsTrigger value="categories" className="gap-1.5 data-[state=active]:bg-card data-[state=active]:shadow-sm">
-              <Tags className="w-4 h-4" />
-              Categorias
+            <TabsTrigger value="categories" className="gap-1 sm:gap-1.5 text-xs sm:text-sm data-[state=active]:bg-card data-[state=active]:shadow-sm">
+              <Tags className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="hidden xs:inline">Categorias</span>
+              <span className="xs:hidden">Categ.</span>
             </TabsTrigger>
-            <TabsTrigger value="units" className="gap-1.5 data-[state=active]:bg-card data-[state=active]:shadow-sm">
-              <Building2 className="w-4 h-4" />
+            <TabsTrigger value="units" className="gap-1 sm:gap-1.5 text-xs sm:text-sm data-[state=active]:bg-card data-[state=active]:shadow-sm">
+              <Building2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               Unidades
             </TabsTrigger>
-            <TabsTrigger value="users" className="gap-1.5 data-[state=active]:bg-card data-[state=active]:shadow-sm">
-              <UserPlus className="w-4 h-4" />
+            <TabsTrigger value="users" className="gap-1 sm:gap-1.5 text-xs sm:text-sm data-[state=active]:bg-card data-[state=active]:shadow-sm">
+              <UserPlus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               Usuários
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="billing" className="space-y-6">
-            <div className="flex items-center gap-2">
+          <TabsContent value="billing" className="space-y-4 sm:space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
               <span className="text-sm font-medium text-muted-foreground">Médico:</span>
               <Select value={selectedDoctorId} onValueChange={setSelectedDoctorId}>
-                <SelectTrigger className="w-48">
+                <SelectTrigger className="w-full sm:w-48">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -72,12 +74,12 @@ export default function AdminDashboard({ onOpenProfile }: { onOpenProfile?: () =
             <SummaryCards data={doctorData} />
 
             <Card className="border-0 shadow-card">
-              <CardHeader className="pb-3">
-                <CardTitle className="font-display text-lg">
+              <CardHeader className="pb-3 px-3 sm:px-6">
+                <CardTitle className="font-display text-base sm:text-lg">
                   Faturamento Mensal — {doctorData.doctorName} ({doctorData.year})
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-0 sm:p-4">
+              <CardContent className="p-0">
                 <BillingTable
                   data={doctorData}
                   editable={true}
