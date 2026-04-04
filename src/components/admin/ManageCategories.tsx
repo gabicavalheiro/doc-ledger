@@ -48,14 +48,12 @@ export default function ManageCategories() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  // Form state
   const [name, setName] = useState('');
   const [calcType, setCalcType] = useState<'percentage' | 'fixed_fee'>('percentage');
   const [retention, setRetention] = useState('15');
   const [repasse, setRepasse] = useState('50');
   const [fixedFee, setFixedFee] = useState('0');
 
-  // Doctor rules dialog
   const [rulesOpen, setRulesOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [doctorRules, setDoctorRules] = useState<DoctorRule[]>([]);
@@ -99,11 +97,7 @@ export default function ManageCategories() {
       toast({ title: 'Erro', description: error.message, variant: 'destructive' });
     } else {
       toast({ title: 'Categoria criada!', description: `${name} adicionada.` });
-      setName('');
-      setRetention('15');
-      setRepasse('50');
-      setFixedFee('0');
-      setCalcType('percentage');
+      setName(''); setRetention('15'); setRepasse('50'); setFixedFee('0'); setCalcType('percentage');
       fetchData();
     }
     setSaving(false);
@@ -122,10 +116,7 @@ export default function ManageCategories() {
     setSelectedCategory(cat);
     setRulesOpen(true);
     setRulesLoading(true);
-    const { data } = await supabase
-      .from('doctor_category_rules')
-      .select('*')
-      .eq('category_id', cat.id);
+    const { data } = await supabase.from('doctor_category_rules').select('*').eq('category_id', cat.id);
     setDoctorRules(data || []);
     setRulesLoading(false);
   };
@@ -133,7 +124,6 @@ export default function ManageCategories() {
   const handleAddRule = async () => {
     if (!selectedDoctor || !selectedCategory) return;
     setRulesSaving(true);
-
     const payload: any = {
       doctor_id: selectedDoctor,
       category_id: selectedCategory.id,
@@ -143,23 +133,13 @@ export default function ManageCategories() {
     if (ruleRepasse.trim()) payload.repasse_percentage = parseFloat(ruleRepasse);
     if (ruleFixedFee.trim()) payload.fixed_fee = parseFloat(ruleFixedFee);
 
-    const { error } = await supabase
-      .from('doctor_category_rules')
-      .upsert(payload, { onConflict: 'doctor_id,category_id' });
-
+    const { error } = await supabase.from('doctor_category_rules').upsert(payload, { onConflict: 'doctor_id,category_id' });
     if (error) {
       toast({ title: 'Erro', description: error.message, variant: 'destructive' });
     } else {
       toast({ title: 'Regra salva!' });
-      setSelectedDoctor('');
-      setSelectedUnit('');
-      setRuleRetention('');
-      setRuleRepasse('');
-      setRuleFixedFee('');
-      const { data } = await supabase
-        .from('doctor_category_rules')
-        .select('*')
-        .eq('category_id', selectedCategory.id);
+      setSelectedDoctor(''); setSelectedUnit(''); setRuleRetention(''); setRuleRepasse(''); setRuleFixedFee('');
+      const { data } = await supabase.from('doctor_category_rules').select('*').eq('category_id', selectedCategory.id);
       setDoctorRules(data || []);
     }
     setRulesSaving(false);
@@ -168,10 +148,7 @@ export default function ManageCategories() {
   const handleDeleteRule = async (ruleId: string) => {
     await supabase.from('doctor_category_rules').delete().eq('id', ruleId);
     if (selectedCategory) {
-      const { data } = await supabase
-        .from('doctor_category_rules')
-        .select('*')
-        .eq('category_id', selectedCategory.id);
+      const { data } = await supabase.from('doctor_category_rules').select('*').eq('category_id', selectedCategory.id);
       setDoctorRules(data || []);
     }
   };
@@ -182,50 +159,50 @@ export default function ManageCategories() {
   return (
     <>
       <Card className="border-0 shadow-card">
-        <CardHeader>
-          <CardTitle className="font-display text-lg flex items-center gap-2">
+        <CardHeader className="px-4 sm:px-6">
+          <CardTitle className="font-display text-base sm:text-lg flex items-center gap-2">
             <Tags className="w-5 h-5 text-primary" />
             Categorias de Pagamento
           </CardTitle>
-          <CardDescription>
-            Defina categorias com regras de cálculo (percentual ou valor fixo) e personalize por médico
+          <CardDescription className="text-xs sm:text-sm">
+            Defina categorias com regras de cálculo e personalize por médico
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <form onSubmit={handleAdd} className="space-y-4">
+        <CardContent className="space-y-6 px-4 sm:px-6">
+          <form onSubmit={handleAdd} className="space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end">
               <div className="space-y-2">
-                <Label>Nome</Label>
-                <Input value={name} onChange={e => setName(e.target.value)} placeholder="Ex: Exames" required maxLength={100} />
+                <Label className="text-xs sm:text-sm">Nome</Label>
+                <Input value={name} onChange={e => setName(e.target.value)} placeholder="Ex: Exames" required maxLength={100} className="h-9" />
               </div>
               <div className="space-y-2">
-                <Label>Tipo de Cálculo</Label>
+                <Label className="text-xs sm:text-sm">Tipo de Cálculo</Label>
                 <Select value={calcType} onValueChange={(v) => setCalcType(v as 'percentage' | 'fixed_fee')}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="percentage">Percentual</SelectItem>
-                    <SelectItem value="fixed_fee">Valor Fixo (Honorário)</SelectItem>
+                    <SelectItem value="fixed_fee">Valor Fixo</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               {calcType === 'percentage' ? (
                 <>
                   <div className="space-y-2">
-                    <Label>Retenção (%)</Label>
-                    <Input type="number" step="0.01" min="0" max="100" value={retention} onChange={e => setRetention(e.target.value)} />
+                    <Label className="text-xs sm:text-sm">Retenção (%)</Label>
+                    <Input type="number" step="0.01" min="0" max="100" value={retention} onChange={e => setRetention(e.target.value)} className="h-9" />
                   </div>
                   <div className="space-y-2">
-                    <Label>Repasse (%)</Label>
-                    <Input type="number" step="0.01" min="0" max="100" value={repasse} onChange={e => setRepasse(e.target.value)} />
+                    <Label className="text-xs sm:text-sm">Repasse (%)</Label>
+                    <Input type="number" step="0.01" min="0" max="100" value={repasse} onChange={e => setRepasse(e.target.value)} className="h-9" />
                   </div>
                 </>
               ) : (
-                <div className="space-y-2">
-                  <Label>Valor Fixo (R$)</Label>
-                  <Input type="number" step="0.01" min="0" value={fixedFee} onChange={e => setFixedFee(e.target.value)} />
+                <div className="space-y-2 sm:col-span-2">
+                  <Label className="text-xs sm:text-sm">Valor Fixo (R$)</Label>
+                  <Input type="number" step="0.01" min="0" value={fixedFee} onChange={e => setFixedFee(e.target.value)} className="h-9" />
                 </div>
               )}
-              <Button type="submit" disabled={saving} className="bg-gradient-primary text-primary-foreground hover:opacity-90">
+              <Button type="submit" disabled={saving} className="bg-gradient-primary text-primary-foreground hover:opacity-90 h-9">
                 {saving ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Plus className="w-4 h-4 mr-1" />}
                 Adicionar
               </Button>
@@ -239,24 +216,24 @@ export default function ManageCategories() {
           ) : (
             <div className="space-y-2">
               {categories.map(c => (
-                <div key={c.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                <div key={c.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                       <Tags className="w-4 h-4 text-primary" />
                     </div>
-                    <div>
-                      <span className="font-medium text-sm">{c.name}</span>
-                      <div className="flex gap-2 text-xs text-muted-foreground">
+                    <div className="min-w-0">
+                      <span className="font-medium text-sm block truncate">{c.name}</span>
+                      <div className="text-xs text-muted-foreground">
                         {c.calculation_type === 'percentage' ? (
-                          <span>Retenção: {c.retention_percentage}% · Repasse: {c.repasse_percentage}%</span>
+                          <span>Ret: {c.retention_percentage}% · Rep: {c.repasse_percentage}%</span>
                         ) : (
-                          <span>Valor fixo: R$ {Number(c.fixed_fee).toFixed(2)}</span>
+                          <span>Fixo: R$ {Number(c.fixed_fee).toFixed(2)}</span>
                         )}
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs">
+                  <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
+                    <Badge variant="outline" className="text-[10px] sm:text-xs">
                       {c.calculation_type === 'percentage' ? 'Percentual' : 'Valor Fixo'}
                     </Badge>
                     <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openRules(c)} title="Regras por médico">
@@ -274,22 +251,22 @@ export default function ManageCategories() {
       </Card>
 
       <Dialog open={rulesOpen} onOpenChange={setRulesOpen}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="font-display">
-              Regras por Médico — {selectedCategory?.name}
+            <DialogTitle className="font-display text-base sm:text-lg">
+              Regras — {selectedCategory?.name}
             </DialogTitle>
-            <DialogDescription>
-              Defina valores personalizados para cada médico. Quando não definido, usa o padrão da categoria.
+            <DialogDescription className="text-xs sm:text-sm">
+              Valores personalizados por médico. Quando não definido, usa o padrão.
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-3 items-end">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
               <div className="space-y-2">
-                <Label>Médico</Label>
+                <Label className="text-xs sm:text-sm">Médico</Label>
                 <Select value={selectedDoctor} onValueChange={setSelectedDoctor}>
-                  <SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger>
+                  <SelectTrigger className="h-9"><SelectValue placeholder="Selecione..." /></SelectTrigger>
                   <SelectContent>
                     {doctors.map(d => (
                       <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
@@ -298,9 +275,9 @@ export default function ManageCategories() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Unidade</Label>
+                <Label className="text-xs sm:text-sm">Unidade</Label>
                 <Select value={selectedUnit} onValueChange={setSelectedUnit}>
-                  <SelectTrigger><SelectValue placeholder="Todas (padrão)" /></SelectTrigger>
+                  <SelectTrigger className="h-9"><SelectValue placeholder="Todas (padrão)" /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Todas</SelectItem>
                     {units.map(u => (
@@ -312,22 +289,22 @@ export default function ManageCategories() {
               {selectedCategory?.calculation_type === 'percentage' ? (
                 <>
                   <div className="space-y-2">
-                    <Label>Retenção (%)</Label>
-                    <Input type="number" step="0.01" value={ruleRetention} onChange={e => setRuleRetention(e.target.value)} placeholder={`Padrão: ${selectedCategory.retention_percentage}%`} />
+                    <Label className="text-xs sm:text-sm">Retenção (%)</Label>
+                    <Input type="number" step="0.01" value={ruleRetention} onChange={e => setRuleRetention(e.target.value)} placeholder={`Padrão: ${selectedCategory.retention_percentage}%`} className="h-9" />
                   </div>
                   <div className="space-y-2">
-                    <Label>Repasse (%)</Label>
-                    <Input type="number" step="0.01" value={ruleRepasse} onChange={e => setRuleRepasse(e.target.value)} placeholder={`Padrão: ${selectedCategory.repasse_percentage}%`} />
+                    <Label className="text-xs sm:text-sm">Repasse (%)</Label>
+                    <Input type="number" step="0.01" value={ruleRepasse} onChange={e => setRuleRepasse(e.target.value)} placeholder={`Padrão: ${selectedCategory.repasse_percentage}%`} className="h-9" />
                   </div>
                 </>
               ) : (
-                <div className="space-y-2 col-span-2">
-                  <Label>Valor Fixo (R$)</Label>
-                  <Input type="number" step="0.01" value={ruleFixedFee} onChange={e => setRuleFixedFee(e.target.value)} placeholder={`Padrão: R$ ${Number(selectedCategory?.fixed_fee || 0).toFixed(2)}`} />
+                <div className="space-y-2 sm:col-span-2">
+                  <Label className="text-xs sm:text-sm">Valor Fixo (R$)</Label>
+                  <Input type="number" step="0.01" value={ruleFixedFee} onChange={e => setRuleFixedFee(e.target.value)} placeholder={`Padrão: R$ ${Number(selectedCategory?.fixed_fee || 0).toFixed(2)}`} className="h-9" />
                 </div>
               )}
-              <div className="col-span-2">
-                <Button onClick={handleAddRule} disabled={rulesSaving || !selectedDoctor} className="w-full bg-gradient-primary text-primary-foreground hover:opacity-90">
+              <div className="sm:col-span-2">
+                <Button onClick={handleAddRule} disabled={rulesSaving || !selectedDoctor} className="w-full bg-gradient-primary text-primary-foreground hover:opacity-90 h-9">
                   {rulesSaving ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Plus className="w-4 h-4 mr-1" />}
                   Salvar Regra
                 </Button>
@@ -337,21 +314,21 @@ export default function ManageCategories() {
             {rulesLoading ? (
               <div className="flex justify-center py-4"><Loader2 className="w-5 h-5 animate-spin text-primary" /></div>
             ) : doctorRules.length === 0 ? (
-              <p className="text-muted-foreground text-sm text-center py-2">Nenhuma regra personalizada. Todos usam o padrão.</p>
+              <p className="text-muted-foreground text-sm text-center py-2">Nenhuma regra personalizada.</p>
             ) : (
               <div className="space-y-2">
                 {doctorRules.map(r => (
-                  <div key={r.id} className="flex items-center justify-between p-2 rounded-lg bg-muted/50 text-sm">
-                    <div>
+                  <div key={r.id} className="flex items-center justify-between gap-2 p-2 rounded-lg bg-muted/50 text-xs sm:text-sm">
+                    <div className="min-w-0">
                       <span className="font-medium">{getDoctorName(r.doctor_id)}</span>
-                      <span className="text-muted-foreground ml-2 text-xs">📍 {getUnitName(r.unit_id)}</span>
-                      <span className="text-muted-foreground ml-2">
+                      <span className="text-muted-foreground ml-1 sm:ml-2 text-[10px] sm:text-xs">📍 {getUnitName(r.unit_id)}</span>
+                      <span className="text-muted-foreground ml-1 sm:ml-2 block sm:inline">
                         {selectedCategory?.calculation_type === 'percentage'
                           ? `Ret: ${r.retention_percentage ?? '-'}% · Rep: ${r.repasse_percentage ?? '-'}%`
                           : `R$ ${Number(r.fixed_fee ?? 0).toFixed(2)}`}
                       </span>
                     </div>
-                    <Button variant="ghost" size="icon" className="text-destructive h-7 w-7" onClick={() => handleDeleteRule(r.id)}>
+                    <Button variant="ghost" size="icon" className="text-destructive h-7 w-7 shrink-0" onClick={() => handleDeleteRule(r.id)}>
                       <Trash2 className="w-3.5 h-3.5" />
                     </Button>
                   </div>

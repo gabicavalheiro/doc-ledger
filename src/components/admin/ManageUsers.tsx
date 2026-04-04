@@ -26,17 +26,11 @@ export default function ManageUsers() {
       toast({ title: 'Erro', description: 'A senha deve ter pelo menos 6 caracteres.', variant: 'destructive' });
       return;
     }
-
     setLoading(true);
 
-    // Create user via edge function or signup
     const { data: signupData, error: signupError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { full_name: name },
-        emailRedirectTo: window.location.origin,
-      },
+      email, password,
+      options: { data: { full_name: name }, emailRedirectTo: window.location.origin },
     });
 
     if (signupError) {
@@ -45,81 +39,47 @@ export default function ManageUsers() {
       return;
     }
 
-    // Assign role if user was created
     if (signupData.user) {
-      const { error: roleError } = await supabase
-        .from('user_roles')
-        .insert({ user_id: signupData.user.id, role });
-
+      const { error: roleError } = await supabase.from('user_roles').insert({ user_id: signupData.user.id, role });
       if (roleError) {
         toast({ title: 'Usuário criado, mas erro ao atribuir papel', description: roleError.message, variant: 'destructive' });
       } else {
         toast({ title: 'Usuário criado!', description: `${name} cadastrado como ${role === 'admin' ? 'Administrador' : 'Médico'}.` });
-        setEmail('');
-        setPassword('');
-        setName('');
-        setRole('doctor');
+        setEmail(''); setPassword(''); setName(''); setRole('doctor');
       }
     }
-
     setLoading(false);
   };
 
   return (
     <Card className="border-0 shadow-card">
-      <CardHeader>
-        <CardTitle className="font-display text-lg flex items-center gap-2">
+      <CardHeader className="px-4 sm:px-6">
+        <CardTitle className="font-display text-base sm:text-lg flex items-center gap-2">
           <UserPlus className="w-5 h-5 text-primary" />
           Criar Novo Usuário
         </CardTitle>
-        <CardDescription>
-          Cadastre um novo usuário no sistema com papel de Admin ou Médico
+        <CardDescription className="text-xs sm:text-sm">
+          Cadastre um novo usuário com papel de Admin ou Médico
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <form onSubmit={handleCreate} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <CardContent className="px-4 sm:px-6">
+        <form onSubmit={handleCreate} className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <div className="space-y-2">
-            <Label htmlFor="user-name">Nome Completo</Label>
-            <Input
-              id="user-name"
-              value={name}
-              onChange={e => setName(e.target.value)}
-              placeholder="Dr. João Silva"
-              required
-              maxLength={100}
-            />
+            <Label htmlFor="user-name" className="text-xs sm:text-sm">Nome Completo</Label>
+            <Input id="user-name" value={name} onChange={e => setName(e.target.value)} placeholder="Dr. João Silva" required maxLength={100} className="h-9" />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="user-email">Email</Label>
-            <Input
-              id="user-email"
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              placeholder="joao@email.com"
-              required
-              maxLength={255}
-            />
+            <Label htmlFor="user-email" className="text-xs sm:text-sm">Email</Label>
+            <Input id="user-email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="joao@email.com" required maxLength={255} className="h-9" />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="user-password">Senha</Label>
-            <Input
-              id="user-password"
-              type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-              minLength={6}
-              maxLength={128}
-            />
+            <Label htmlFor="user-password" className="text-xs sm:text-sm">Senha</Label>
+            <Input id="user-password" type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" required minLength={6} maxLength={128} className="h-9" />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="user-role">Papel</Label>
+            <Label htmlFor="user-role" className="text-xs sm:text-sm">Papel</Label>
             <Select value={role} onValueChange={(v) => setRole(v as 'admin' | 'doctor')}>
-              <SelectTrigger id="user-role">
-                <SelectValue />
-              </SelectTrigger>
+              <SelectTrigger id="user-role" className="h-9"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="doctor">Médico</SelectItem>
                 <SelectItem value="admin">Administrador</SelectItem>
@@ -127,11 +87,7 @@ export default function ManageUsers() {
             </Select>
           </div>
           <div className="sm:col-span-2">
-            <Button
-              type="submit"
-              className="w-full sm:w-auto bg-gradient-primary text-primary-foreground hover:opacity-90"
-              disabled={loading}
-            >
+            <Button type="submit" className="w-full sm:w-auto bg-gradient-primary text-primary-foreground hover:opacity-90 h-9" disabled={loading}>
               {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <UserPlus className="w-4 h-4 mr-2" />}
               Criar Usuário
             </Button>
