@@ -50,7 +50,7 @@ export default function ManageCategories() {
   const [saving, setSaving] = useState(false);
 
   const [name, setName] = useState('');
-  const [calcType, setCalcType] = useState<'percentage' | 'fixed_fee'>('percentage');
+  const [calcType, setCalcType] = useState<'percentage' | 'fixed_fee' | 'mixed'>('percentage');
   const [retention, setRetention] = useState('15');
   const [repasse, setRepasse] = useState('50');
   const [fixedFee, setFixedFee] = useState('0');
