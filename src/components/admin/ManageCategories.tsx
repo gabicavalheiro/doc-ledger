@@ -8,7 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Tags, Plus, Trash2, Settings2 } from 'lucide-react';
+import { Loader2, Tags, Plus, Trash2, Settings2, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
 
 interface Category {
   id: string;
@@ -103,6 +104,16 @@ export default function ManageCategories() {
     setSaving(false);
   };
 
+  const handleToggleActive = async (id: string, currentActive: boolean) => {
+    const { error } = await supabase.from('payment_categories').update({ active: !currentActive }).eq('id', id);
+    if (error) {
+      toast({ title: 'Erro', description: error.message, variant: 'destructive' });
+    } else {
+      toast({ title: currentActive ? 'Categoria desativada' : 'Categoria ativada' });
+      fetchData();
+    }
+  };
+
   const handleDelete = async (id: string) => {
     const { error } = await supabase.from('payment_categories').delete().eq('id', id);
     if (error) {
@@ -177,15 +188,16 @@ export default function ManageCategories() {
               </div>
               <div className="space-y-2">
                 <Label className="text-xs sm:text-sm">Tipo de Cálculo</Label>
-                <Select value={calcType} onValueChange={(v) => setCalcType(v as 'percentage' | 'fixed_fee')}>
+                <Select value={calcType} onValueChange={(v) => setCalcType(v as 'percentage' | 'fixed_fee' | 'mixed')}>
                   <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="percentage">Percentual</SelectItem>
                     <SelectItem value="fixed_fee">Valor Fixo</SelectItem>
+                    <SelectItem value="mixed">Misto (% + Fixo)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-              {calcType === 'percentage' ? (
+              {(calcType === 'percentage' || calcType === 'mixed') && (
                 <>
                   <div className="space-y-2">
                     <Label className="text-xs sm:text-sm">Retenção (%)</Label>
@@ -196,8 +208,9 @@ export default function ManageCategories() {
                     <Input type="number" step="0.01" min="0" max="100" value={repasse} onChange={e => setRepasse(e.target.value)} className="h-9" />
                   </div>
                 </>
-              ) : (
-                <div className="space-y-2 sm:col-span-2">
+              )}
+              {(calcType === 'fixed_fee' || calcType === 'mixed') && (
+                <div className="space-y-2">
                   <Label className="text-xs sm:text-sm">Valor Fixo (R$)</Label>
                   <Input type="number" step="0.01" min="0" value={fixedFee} onChange={e => setFixedFee(e.target.value)} className="h-9" />
                 </div>
@@ -216,16 +229,18 @@ export default function ManageCategories() {
           ) : (
             <div className="space-y-2">
               {categories.map(c => (
-                <div key={c.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
+                <div key={c.id} className={`flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-lg transition-colors ${c.active ? 'bg-muted/50 hover:bg-muted' : 'bg-muted/20 opacity-60'}`}>
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                      <Tags className="w-4 h-4 text-primary" />
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${c.active ? 'bg-primary/10' : 'bg-muted'}`}>
+                      <Tags className={`w-4 h-4 ${c.active ? 'text-primary' : 'text-muted-foreground'}`} />
                     </div>
                     <div className="min-w-0">
-                      <span className="font-medium text-sm block truncate">{c.name}</span>
+                      <span className={`font-medium text-sm block truncate ${!c.active ? 'line-through text-muted-foreground' : ''}`}>{c.name}</span>
                       <div className="text-xs text-muted-foreground">
                         {c.calculation_type === 'percentage' ? (
                           <span>Ret: {c.retention_percentage}% · Rep: {c.repasse_percentage}%</span>
+                        ) : c.calculation_type === 'mixed' ? (
+                          <span>Ret: {c.retention_percentage}% · Rep: {c.repasse_percentage}% · Fixo: R$ {Number(c.fixed_fee).toFixed(2)}</span>
                         ) : (
                           <span>Fixo: R$ {Number(c.fixed_fee).toFixed(2)}</span>
                         )}
@@ -234,8 +249,9 @@ export default function ManageCategories() {
                   </div>
                   <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
                     <Badge variant="outline" className="text-[10px] sm:text-xs">
-                      {c.calculation_type === 'percentage' ? 'Percentual' : 'Valor Fixo'}
+                      {c.calculation_type === 'percentage' ? 'Percentual' : c.calculation_type === 'mixed' ? 'Misto' : 'Valor Fixo'}
                     </Badge>
+                    <Switch checked={c.active} onCheckedChange={() => handleToggleActive(c.id, c.active)} className="scale-75" />
                     <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openRules(c)} title="Regras por médico">
                       <Settings2 className="w-4 h-4" />
                     </Button>
