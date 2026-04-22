@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useBilling } from '@/contexts/BillingContext';
-import { DOCTORS } from '@/types/billing';
+import { supabase } from '@/integrations/supabase/client';
 import SummaryCards from '@/components/SummaryCards';
 import BillingTable from '@/components/BillingTable';
 import AppHeader from '@/components/AppHeader';
