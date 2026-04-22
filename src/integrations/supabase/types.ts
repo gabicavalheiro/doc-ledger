@@ -14,6 +14,76 @@ export type Database = {
   }
   public: {
     Tables: {
+      billing_entries: {
+        Row: {
+          category_id: string | null
+          created_at: string
+          created_by: string | null
+          doctor_id: string
+          fixed_fee_amount: number
+          gross_amount: number
+          id: string
+          notes: string | null
+          reference_month: string
+          repasse_amount: number
+          retention_amount: number
+          unit_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          category_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          doctor_id: string
+          fixed_fee_amount?: number
+          gross_amount?: number
+          id?: string
+          notes?: string | null
+          reference_month: string
+          repasse_amount?: number
+          retention_amount?: number
+          unit_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          doctor_id?: string
+          fixed_fee_amount?: number
+          gross_amount?: number
+          id?: string
+          notes?: string | null
+          reference_month?: string
+          repasse_amount?: number
+          retention_amount?: number
+          unit_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "billing_entries_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "payment_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "billing_entries_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "billing_entries_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "units"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       doctor_category_rules: {
         Row: {
           category_id: string
