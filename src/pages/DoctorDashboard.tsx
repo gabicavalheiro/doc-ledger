@@ -17,10 +17,10 @@ export default function DoctorDashboard({ onOpenProfile }: { onOpenProfile?: () 
   return (
     <div className="min-h-screen bg-background">
       <AppHeader onOpenProfile={onOpenProfile} />
-      <main className="container max-w-[1600px] mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-bold font-display">Meu Painel Financeiro</h1>
-          <p className="text-muted-foreground text-xs sm:text-sm">Bem-vindo(a), {displayName}</p>
+      <main className="container max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10 space-y-6 sm:space-y-8">
+        <div className="space-y-1">
+          <h1 className="text-2xl sm:text-3xl font-bold font-display tracking-tight">Meu Painel Financeiro</h1>
+          <p className="text-muted-foreground text-sm">Bem-vindo(a), {displayName}</p>
         </div>
 
         <SummaryCards data={doctorData} />
