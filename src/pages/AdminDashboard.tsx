@@ -14,10 +14,27 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart3, UserPlus, Stethoscope, Tags, Building2 } from 'lucide-react';
 
+interface DoctorOption { id: string; name: string; }
+
 export default function AdminDashboard({ onOpenProfile }: { onOpenProfile?: () => void }) {
   const { user } = useAuth();
   const { data, updateMonth, getDoctorData } = useBilling();
-  const [selectedDoctorId, setSelectedDoctorId] = useState(DOCTORS[0].id);
+  const [dbDoctors, setDbDoctors] = useState<DoctorOption[]>([]);
+  const [selectedDoctorId, setSelectedDoctorId] = useState<string>('');
+
+  useEffect(() => {
+    supabase
+      .from('doctors')
+      .select('id, name')
+      .eq('active', true)
+      .order('name')
+      .then(({ data }) => {
+        if (data) {
+          setDbDoctors(data);
+          if (data.length > 0) setSelectedDoctorId(prev => prev || data[0].id);
+        }
+      });
+  }, []);
 
   const doctorData = getDoctorData(selectedDoctorId);
 
