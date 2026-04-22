@@ -5,8 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Stethoscope, Plus, Trash2 } from 'lucide-react';
+import { Loader2, Stethoscope, Plus, Trash2, UserCheck } from 'lucide-react';
 
 interface Doctor {
   id: string;
@@ -14,24 +15,37 @@ interface Doctor {
   specialty: string | null;
   crm: string | null;
   active: boolean;
+  user_id: string | null;
 }
+
+interface ProfileOption {
+  user_id: string;
+  full_name: string | null;
+}
+
+const UNLINKED = '__none__';
 
 export default function ManageDoctors() {
   const { toast } = useToast();
   const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [profiles, setProfiles] = useState<ProfileOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [name, setName] = useState('');
   const [specialty, setSpecialty] = useState('');
   const [crm, setCrm] = useState('');
 
-  const fetchDoctors = async () => {
-    const { data, error } = await supabase.from('doctors').select('id, name, specialty, crm, active').order('name');
-    if (!error && data) setDoctors(data);
+  const fetchAll = async () => {
+    const [{ data: docs }, { data: profs }] = await Promise.all([
+      supabase.from('doctors').select('id, name, specialty, crm, active, user_id').order('name'),
+      supabase.from('profiles').select('user_id, full_name'),
+    ]);
+    if (docs) setDoctors(docs);
+    if (profs) setProfiles(profs);
     setLoading(false);
   };
 
-  useEffect(() => { fetchDoctors(); }, []);
+  useEffect(() => { fetchAll(); }, []);
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,14 +60,14 @@ export default function ManageDoctors() {
     } else {
       toast({ title: 'Médico cadastrado!', description: `${name} adicionado com sucesso.` });
       setName(''); setSpecialty(''); setCrm('');
-      fetchDoctors();
+      fetchAll();
     }
     setSaving(false);
   };
 
   const handleToggle = async (doctor: Doctor) => {
     const { error } = await supabase.from('doctors').update({ active: !doctor.active }).eq('id', doctor.id);
-    if (!error) fetchDoctors();
+    if (!error) fetchAll();
   };
 
   const handleDelete = async (id: string) => {
@@ -61,9 +75,23 @@ export default function ManageDoctors() {
     if (error) {
       toast({ title: 'Erro ao remover', description: error.message, variant: 'destructive' });
     } else {
-      fetchDoctors();
+      fetchAll();
     }
   };
+
+  const handleLinkUser = async (doctor: Doctor, value: string) => {
+    const newUserId = value === UNLINKED ? null : value;
+    const { error } = await supabase.from('doctors').update({ user_id: newUserId }).eq('id', doctor.id);
+    if (error) {
+      toast({ title: 'Erro ao vincular', description: error.message, variant: 'destructive' });
+    } else {
+      toast({ title: 'Vínculo atualizado!', description: newUserId ? 'Usuário vinculado ao médico.' : 'Vínculo removido.' });
+      fetchAll();
+    }
+  };
+
+  // For each doctor, build the list of available users (own user + users not linked elsewhere)
+  const linkedUserIds = new Set(doctors.map(d => d.user_id).filter(Boolean) as string[]);
 
   return (
     <Card className="border-0 shadow-card">
@@ -72,7 +100,9 @@ export default function ManageDoctors() {
           <Stethoscope className="w-5 h-5 text-primary" />
           Gerenciar Médicos
         </CardTitle>
-        <CardDescription className="text-xs sm:text-sm">Cadastre e gerencie os médicos do sistema</CardDescription>
+        <CardDescription className="text-xs sm:text-sm">
+          Cadastre médicos e vincule-os a usuários para que cada um veja apenas seu próprio faturamento
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6 px-4 sm:px-6">
         <form onSubmit={handleAdd} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-end">
@@ -100,30 +130,54 @@ export default function ManageDoctors() {
           <p className="text-muted-foreground text-sm text-center py-4">Nenhum médico cadastrado.</p>
         ) : (
           <div className="space-y-2">
-            {doctors.map(d => (
-              <div key={d.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                    <Stethoscope className="w-4 h-4 text-primary" />
-                  </div>
-                  <div className="min-w-0">
-                    <span className="font-medium text-sm block truncate">{d.name}</span>
-                    <div className="flex gap-2 text-xs text-muted-foreground">
-                      {d.specialty && <span>{d.specialty}</span>}
-                      {d.crm && <span>CRM: {d.crm}</span>}
+            {doctors.map(d => {
+              const availableProfiles = profiles.filter(
+                p => p.user_id === d.user_id || !linkedUserIds.has(p.user_id)
+              );
+              return (
+                <div key={d.id} className="flex flex-col gap-3 p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Stethoscope className="w-4 h-4 text-primary" />
+                      </div>
+                      <div className="min-w-0">
+                        <span className="font-medium text-sm block truncate">{d.name}</span>
+                        <div className="flex gap-2 text-xs text-muted-foreground flex-wrap">
+                          {d.specialty && <span>{d.specialty}</span>}
+                          {d.crm && <span>CRM: {d.crm}</span>}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
+                      <Badge variant={d.active ? 'default' : 'secondary'} className="cursor-pointer text-[10px] sm:text-xs" onClick={() => handleToggle(d)}>
+                        {d.active ? 'Ativo' : 'Inativo'}
+                      </Badge>
+                      <Button variant="ghost" size="icon" className="text-destructive h-8 w-8" onClick={() => handleDelete(d.id)}>
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
                     </div>
                   </div>
+                  <div className="flex items-center gap-2 pl-11">
+                    <UserCheck className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                    <Label className="text-xs text-muted-foreground shrink-0">Usuário vinculado:</Label>
+                    <Select value={d.user_id ?? UNLINKED} onValueChange={(v) => handleLinkUser(d, v)}>
+                      <SelectTrigger className="h-8 text-xs flex-1 max-w-xs">
+                        <SelectValue placeholder="Nenhum" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value={UNLINKED}>— Nenhum —</SelectItem>
+                        {availableProfiles.map(p => (
+                          <SelectItem key={p.user_id} value={p.user_id}>
+                            {p.full_name || 'Sem nome'}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
-                  <Badge variant={d.active ? 'default' : 'secondary'} className="cursor-pointer text-[10px] sm:text-xs" onClick={() => handleToggle(d)}>
-                    {d.active ? 'Ativo' : 'Inativo'}
-                  </Badge>
-                  <Button variant="ghost" size="icon" className="text-destructive h-8 w-8" onClick={() => handleDelete(d.id)}>
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </CardContent>
