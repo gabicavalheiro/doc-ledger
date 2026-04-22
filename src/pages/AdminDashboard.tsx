@@ -76,12 +76,12 @@ export default function AdminDashboard({ onOpenProfile }: { onOpenProfile?: () =
           <TabsContent value="billing" className="space-y-4 sm:space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center gap-2">
               <span className="text-sm font-medium text-muted-foreground">Médico:</span>
-              <Select value={selectedDoctorId} onValueChange={setSelectedDoctorId}>
-                <SelectTrigger className="w-full sm:w-48">
-                  <SelectValue />
+              <Select value={selectedDoctorId} onValueChange={setSelectedDoctorId} disabled={dbDoctors.length === 0}>
+                <SelectTrigger className="w-full sm:w-64">
+                  <SelectValue placeholder={dbDoctors.length === 0 ? 'Nenhum médico cadastrado' : 'Selecione...'} />
                 </SelectTrigger>
                 <SelectContent>
-                  {DOCTORS.map(d => (
+                  {dbDoctors.map(d => (
                     <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
                   ))}
                 </SelectContent>
