@@ -31,8 +31,8 @@ export default function DoctorDashboard({ onOpenProfile }: { onOpenProfile?: () 
               Relatório Mensal — {doctorData.year}
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-0">
-            <BillingTable data={doctorData} editable={false} />
+          <CardContent className="p-4 sm:p-6">
+            <BillingTable doctorId={user.id} editable={false} />
           </CardContent>
         </Card>
       </main>

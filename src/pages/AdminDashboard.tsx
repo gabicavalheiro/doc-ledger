@@ -79,12 +79,8 @@ export default function AdminDashboard({ onOpenProfile }: { onOpenProfile?: () =
                   Faturamento Mensal — {doctorData.doctorName} ({doctorData.year})
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-0">
-                <BillingTable
-                  data={doctorData}
-                  editable={true}
-                  onUpdate={(month, updates) => updateMonth(selectedDoctorId, month, updates)}
-                />
+          <CardContent className="p-4 sm:p-6">
+                <BillingTable doctorId={selectedDoctorId} editable={true} />
               </CardContent>
             </Card>
           </TabsContent>
