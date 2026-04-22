@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useBilling } from '@/contexts/BillingContext';
-import { DOCTORS } from '@/types/billing';
+import { supabase } from '@/integrations/supabase/client';
 import SummaryCards from '@/components/SummaryCards';
 import BillingTable from '@/components/BillingTable';
 import AppHeader from '@/components/AppHeader';
@@ -14,10 +14,27 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart3, UserPlus, Stethoscope, Tags, Building2 } from 'lucide-react';
 
+interface DoctorOption { id: string; name: string; }
+
 export default function AdminDashboard({ onOpenProfile }: { onOpenProfile?: () => void }) {
   const { user } = useAuth();
   const { data, updateMonth, getDoctorData } = useBilling();
-  const [selectedDoctorId, setSelectedDoctorId] = useState(DOCTORS[0].id);
+  const [dbDoctors, setDbDoctors] = useState<DoctorOption[]>([]);
+  const [selectedDoctorId, setSelectedDoctorId] = useState<string>('');
+
+  useEffect(() => {
+    supabase
+      .from('doctors')
+      .select('id, name')
+      .eq('active', true)
+      .order('name')
+      .then(({ data }) => {
+        if (data) {
+          setDbDoctors(data);
+          if (data.length > 0) setSelectedDoctorId(prev => prev || data[0].id);
+        }
+      });
+  }, []);
 
   const doctorData = getDoctorData(selectedDoctorId);
 
@@ -59,12 +76,12 @@ export default function AdminDashboard({ onOpenProfile }: { onOpenProfile?: () =
           <TabsContent value="billing" className="space-y-4 sm:space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center gap-2">
               <span className="text-sm font-medium text-muted-foreground">Médico:</span>
-              <Select value={selectedDoctorId} onValueChange={setSelectedDoctorId}>
-                <SelectTrigger className="w-full sm:w-48">
-                  <SelectValue />
+              <Select value={selectedDoctorId} onValueChange={setSelectedDoctorId} disabled={dbDoctors.length === 0}>
+                <SelectTrigger className="w-full sm:w-64">
+                  <SelectValue placeholder={dbDoctors.length === 0 ? 'Nenhum médico cadastrado' : 'Selecione...'} />
                 </SelectTrigger>
                 <SelectContent>
-                  {DOCTORS.map(d => (
+                  {dbDoctors.map(d => (
                     <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
                   ))}
                 </SelectContent>
